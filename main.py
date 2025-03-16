@@ -10,14 +10,13 @@ pl.Config.set_tbl_cols(50)
 
 
 async def main():
-    ### Get data from Symbiotic API
+### Get data from Symbiotic API
     df_operators = await get_operators()
     df_networks = await get_networks()
     #df_vaults = await get_vaults()
-    
+
     df_staking_data = get_staking_data("python symb.py nets")
 
-    
     # Get unique addresses
     unique_price_list = df_staking_data["collateral_asset_address"].unique().to_list()
 
@@ -30,9 +29,13 @@ async def main():
 
     # Convert the list of results into a Polars DataFrame
     prices = pl.concat(price_results)
-
     print("✅ Prices fetched successfully")
-    
+
+
+    df_staking_data = df_staking_data.with_columns(
+        pl.col("collateral_asset_address").str.to_lowercase().alias("collateral_asset_address")
+    )
+
     df_staking_data = df_staking_data.join(
                             df_operators,
                             on=['node_operator_address'],
@@ -50,6 +53,7 @@ async def main():
     df_staking_data = df_staking_data.with_columns(
         pl.col("amount_staked") * pl.col("collateral_asset_price").alias("amount_staked_usd")
     )
+
 
     print(df_staking_data.null_count())
     print("Adding data to database...")
