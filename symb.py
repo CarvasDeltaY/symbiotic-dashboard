@@ -175,7 +175,7 @@ class SymbioticCLI:
     PROVIDERS = {
         "holesky": "https://ethereum-holesky-rpc.publicnode.com",
         "sepolia": "https://ethereum-sepolia-rpc.publicnode.com",
-        "mainnet": "https://ethereum-rpc.publicnode.com",
+        "mainnet": "https://rpc.ankr.com/eth"
     }
 
     ABIS_PATH = "./abi"
