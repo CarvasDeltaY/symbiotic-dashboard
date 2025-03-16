@@ -1,4 +1,4 @@
-from external.symbiotic.read_info_api import get_operators,get_networks,get_vaults
+from external.symbiotic.read_info_api import get_operators,get_networks,get_vaults,get_operator_name_manual
 from external.symbiotic.read_info_cli import get_staking_data
 from external.coingecko.read_info_api import get_prices
 import asyncio
@@ -50,10 +50,12 @@ async def main():
                             how='left'
                         )
 
-    df_staking_data = df_staking_data.with_columns(
-        pl.col("amount_staked") * pl.col("collateral_asset_price").alias("amount_staked_usd")
-    )
+    # Get operator name manually if not found in API
+    df_staking_data = get_operator_name_manual(df_staking_data)
 
+    df_staking_data = df_staking_data.with_columns(
+    (pl.col("amount_staked") * pl.col("collateral_asset_price")).alias("amount_staked_usd")
+    )
 
     print(df_staking_data.null_count())
     print("Adding data to database...")
