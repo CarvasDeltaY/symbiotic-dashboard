@@ -66,7 +66,7 @@ async def main():
     try:
         session = SessionLocal()
 
-        delete_query = text("DELETE FROM StakingDataCurrent")
+        delete_query = text("DELETE FROM staking_data_current")
         session.execute(delete_query)
         session.bulk_insert_mappings(StakingDataCurrent, dict_staking_data)
 
