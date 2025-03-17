@@ -51,7 +51,7 @@ async def main():
                         )
 
     # Get operator name manually if not found in API
-    df_staking_data = get_operator_name_manual(df_staking_data)
+    df_staking_data = await get_operator_name_manual(df_staking_data)
 
     df_staking_data = df_staking_data.with_columns(
     (pl.col("amount_staked") * pl.col("collateral_asset_price")).alias("amount_staked_usd")
