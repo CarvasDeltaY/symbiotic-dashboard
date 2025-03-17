@@ -102,6 +102,20 @@ async def data_quality_control(
     .alias("network_name")
     )
 
+    df = df.with_columns(
+    pl.when(pl.col("collateral_asset_symbol").is_null())
+    .then(pl.lit("Other"))
+    .otherwise(pl.col("collateral_asset_symbol"))
+    .alias("collateral_asset_symbol")
+    )
+
+    df = df.with_columns(
+    pl.when(pl.col("network_category").is_null())
+    .then(pl.lit("Other"))
+    .otherwise(pl.col("network_category"))
+    .alias("network_category")
+    )
+    
     # Remove rows with null collateral asset price
     df = df.with_columns(pl.col("collateral_asset_price").fill_null(pl.lit(0.0)))
     
