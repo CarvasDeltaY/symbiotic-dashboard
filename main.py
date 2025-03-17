@@ -56,6 +56,7 @@ async def main():
     df_staking_data = df_staking_data.with_columns(
     (pl.col("amount_staked") * pl.col("collateral_asset_price")).alias("amount_staked_usd")
     )
+    
 
     print(df_staking_data.null_count())
     print("Adding data to database...")
