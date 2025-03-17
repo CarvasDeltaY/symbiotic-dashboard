@@ -54,7 +54,7 @@ def get_staking_data(command: str) -> pl.DataFrame:
                 current_operator = line.split(": ")[1].strip().lower()
             
             if "Collateral:" in line:
-                collateral_asset_symbol = line.split("(")[-1].strip(")").lower()
+                collateral_asset_symbol = line.split("(")[-1].strip(")")
                 match = re.search(r"Collateral:\s+(0x[a-fA-F0-9]+)", line)
                 if match:
                     collateral_asset_address = match.group(1).strip()
