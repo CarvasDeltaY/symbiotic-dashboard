@@ -106,7 +106,7 @@ async def data_quality_control(
     df = df.with_columns(pl.col("collateral_asset_price").fill_null(pl.lit(0.0)))
     
     # Remove rows with null amount staked in USD
-    df = df.filter(pl.col("amount_staked_usd").fill_null(pl.lit(0.0)))
+    df = df.with_columns(pl.col("amount_staked_usd").fill_null(pl.lit(0.0)))
     
 
     return df
