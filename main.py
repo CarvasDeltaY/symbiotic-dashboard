@@ -4,8 +4,9 @@ from external.coingecko.read_info_api import get_prices
 import asyncio
 import polars as pl
 from external.aws_rds.db import SessionLocal
-from external.aws_rds.database_models import StakingData
+from external.aws_rds.database_models import StakingDataCurrent, StakingDataHistory
 from itertools import batched
+from sqlalchemy import text
 pl.Config.set_tbl_cols(50)
 
 
@@ -56,17 +57,29 @@ async def main():
     df_staking_data = df_staking_data.with_columns(
     (pl.col("amount_staked") * pl.col("collateral_asset_price")).alias("amount_staked_usd")
     )
-    
+
 
     print(df_staking_data.null_count())
     print("Adding data to database...")
 
     dict_staking_data = df_staking_data.to_dicts()
-    session = SessionLocal()
-    session.bulk_insert_mappings(StakingData, dict_staking_data)
-    session.commit()
-    session.close()
-    print("✅ Data added to database successfully")
+    try:
+        session = SessionLocal()
+
+        delete_query = text("DELETE FROM StakingDataCurrent")
+        session.execute(delete_query)
+        session.bulk_insert_mappings(StakingDataCurrent, dict_staking_data)
+
+        session.bulk_insert_mappings(StakingDataHistory, dict_staking_data)
+        session.commit()
+        session.close()
+        print("✅ Data added to database successfully")
+
+    except Exception as e:
+        print(f"❌ Error adding data to database: {e}")
+        session.rollback()
+    finally:
+        session.close()
 
 asyncio.run(main())
 

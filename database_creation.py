@@ -17,15 +17,14 @@ if project_root not in sys.path:
 print("Current sys.path:", sys.path)  # Debug: check if project_root is included
 
 from external.aws_rds.db import Base, engine, SessionLocal
-from external.aws_rds.database_models import StakingData  # Ensure models are imported before create_all
+from external.aws_rds.database_models import StakingDataCurrent, StakingDataHistory  # Ensure models are imported before create_all
 
-
-
-# Now SQLAlchemy knows about the User model
-Base.metadata.create_all(engine)
 
 # Drop all tables
 #Base.metadata.drop_all(engine)
+
+# Now SQLAlchemy knows about the User model
+Base.metadata.create_all(engine)
 
 # Get all table names
 
