@@ -1,6 +1,7 @@
-from external.symbiotic.read_info_api import get_operators,get_networks,get_vaults,get_operator_name_manual
+from external.symbiotic.read_info_api import get_operators,get_networks,get_vaults,get_operator_name_manual,get_category_type_manual
 from external.symbiotic.read_info_cli import get_staking_data
 from external.coingecko.read_info_api import get_prices
+from internal.missing_info import data_quality_check,data_quality_control
 import asyncio
 import polars as pl
 from external.aws_rds.db import SessionLocal
@@ -54,23 +55,40 @@ async def main():
     # Get operator name manually if not found in API
     df_staking_data = await get_operator_name_manual(df_staking_data)
 
+    # Get category type manually
+    df_staking_data = await get_category_type_manual(df_staking_data)
+
+    # Calculate amount staked in USD
+    # TOIMPROVE: Get asset decimals for each collateral asset
+    asset_decimals = 18
+    max_amount_staked = 1_000_000_000
+    df_staking_data = df_staking_data.with_columns(
+        pl.when(pl.col("amount_staked") > max_amount_staked)
+        .then(pl.col("amount_staked") / 10 ** asset_decimals)
+        .otherwise(pl.col("amount_staked"))
+        .alias("amount_staked")
+    )
+
     df_staking_data = df_staking_data.with_columns(
     (pl.col("amount_staked") * pl.col("collateral_asset_price")).alias("amount_staked_usd")
     )
 
+    # Check data quality
+    await data_quality_check(df_staking_data)
+    await data_quality_control(df_staking_data)
 
-    print(df_staking_data.null_count())
     print("Adding data to database...")
 
-    dict_staking_data = df_staking_data.to_dicts()
     try:
         session = SessionLocal()
 
         delete_query = text("DELETE FROM staking_data_current")
         session.execute(delete_query)
-        session.bulk_insert_mappings(StakingDataCurrent, dict_staking_data)
 
+        dict_staking_data = df_staking_data.to_dicts()
+        session.bulk_insert_mappings(StakingDataCurrent, dict_staking_data)
         session.bulk_insert_mappings(StakingDataHistory, dict_staking_data)
+
         session.commit()
         session.close()
         print("✅ Data added to database successfully")

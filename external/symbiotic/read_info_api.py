@@ -31,7 +31,7 @@ async def get_operators(
     for operator in response:
         data_operators.append({
             'node_operator_address' : operator.address.lower(),
-            'node_operator_name' : operator.meta.name,
+            'node_operator_name' : operator.meta.name.capitalize() if operator.meta.name else None,
         })
 
     df_data_operators = pl.DataFrame(data_operators, infer_schema_length=len(data_operators))
@@ -59,7 +59,7 @@ async def get_networks(
     for network in response:
         data_networks.append({
             'network_address' : network.address.lower(),
-            'network_name' : network.meta.name,
+            'network_name' : network.meta.name.capitalize() if network.meta.name else None,
         })
 
     df_data_networks = pl.DataFrame(data_networks, infer_schema_length=len(data_networks))
@@ -96,7 +96,7 @@ async def get_vaults(
                     'slashed' : vault.slashed,
                     'points_total' : point.points,
                     'points_type' : point.pointsType,
-                    'points_name' : point.meta.name
+                    'points_name' : point.meta.name.capitalize() if point.meta.name else None
                 })
 
     df_data_vaults = pl.DataFrame(data_vaults, infer_schema_length=len(data_vaults))
@@ -110,6 +110,7 @@ async def get_operator_name_manual(
     """Returns a DataFrame with the operator name."""
 
     operator_dict = {
+        '0x00e7AD2A172633037C16f4470040ABa7CA6fDe92' : 'BlockHunters',
         '0xe8e54ea992a3f8aaed7f05de7c1487855674a3cf': 'Hashkey Cloud',
         '0x93fda90d946243b6a1823d24344d0b8f8ed87edb': 'A41',
         '0xe955931e1deedcbd2a9e1a1752c9e8d4be0a3c7d': 'Infstones',
@@ -135,7 +136,7 @@ async def get_operator_name_manual(
         '0x5d24dba4ccde2c5b7bc5b609c6a3d5150acb9447': 'Stakin',
         '0x888f7454e65d213c89ba92020e0d716428898f7f': 'Blockdaemon',
         '0x97ab4ccfba2b465f77925e7a58003b5fc0a275b7': 'Nodes Guru',
-        '0x9766e9e3045a8ced5e1fa5b72aeeeec9d74d00d0': 'cp0x by STARK.space',
+        '0x9766e9e3045a8ced5e1fa5b72aeeeec9d74d00d0': 'Cp0x by STARK.space',
         '0xaf0dbc82edc4e893d7898cf6a8ea2497ce859a1f': 'QuantNode',
         '0xee92c0cef065819bfe17a5626b8209f64d82971e': "Block'n'Bones",
         '0x030d6216f27b4370d9e173ff6dd2e192166cba19': 'Node.Monster',
@@ -143,7 +144,7 @@ async def get_operator_name_manual(
         '0x9a9b849a8d099b4d233928c7ef396680d5a90e19': 'Staketab',
         '0x9b43f5ae15ce7443cc6dddde0e819d8fa8533f9a': 'CertiK',
         '0x5112eba9bc2468bb5134cbfbeab9334edae7106a': 'Symbiosis',
-        '0xf28aca7029e35120d0b1205038ac0c2dfa156288': 'zkLink DAO',
+        '0xf28aca7029e35120d0b1205038ac0c2dfa156288': 'ZkLink DAO',
         '0x00e7ad2a172633037c16f4470040aba7ca6fde92': 'BlockHunters',
         '0x0710613f6aa7623f47b8c1c3d036f62fe5ab5200': 'Imperator.co',
         '0x09505f2b29062de4e91e0053490b8f6c3f7d29fc': 'deNodes',
@@ -151,7 +152,7 @@ async def get_operator_name_manual(
         '0x10ee0af996da1e206d96402b4f16fa00818083e0': 'Nethermind',
         '0x220b52b504d090c5aba1066bcf4bcb8ba80d0f00': 'Enigma',
         '0x236633d5c0ec75c49ba3577b9cf551b552fe3e55': 'TodGrinder',
-        '0x282c86910dc7bc7d5da158a4f01384dcc0f8c96': 'Proviroll',
+        '0x282c86910dc7bc7d5da158a4f01384dcc0f8c96':  'Proviroll',
         '0x2f0c999b5717a8d139e3e07ef3f72b673dc551db': 'Galaxy',
         '0x30fa2fce894310540df17873fa978ce2994dad7c': 'BlockPI',
         '0x34fb42588bb13a556c24b9d016edac61caebaf5c': 'Gumi',
@@ -170,7 +171,8 @@ async def get_operator_name_manual(
         '0xf20891ba160d4b85930ad1a94043cca910fe9b84': 'Block Farms',
         '0xf74a6f2c0897f6b45bdc5584b4426cd51486016e': 'NodeOps',
         '0xf9ae0389a9fd3b10045c04eaab92655116c23321': 'DaVinci',
-        '0xfb323682e0ff055ee9d1eaa463a9e67b1cb3d45d': 'HighTower'
+        '0xfb323682e0ff055ee9d1eaa463a9e67b1cb3d45d': 'HighTower',
+        '0xfb6CFeF0e4b12C8aa08F7E8cc0Ed0459ED8f198D': 'Vido.info'
     }
 
 
@@ -183,6 +185,31 @@ async def get_operator_name_manual(
         .alias("node_operator_name")
     )
 
+    return df
+
+async def get_category_type_manual(
+    df : pl.DataFrame
+) -> pl.DataFrame:
+    """Returns a DataFrame with the category type."""
+
+    category_type_dict = {
+        '0x3a7b173124dcfecff1847ff7f8f56e72abe02340': 'ZK',
+        '0x42f15f9e4df4994317453477e80e24797cc1a929': 'AI',
+        '0x59cf937ea9fa9d7398223e3aa33d92f7f5f986a2': 'AI',
+        '0x213f448e7a1c8daede41cf94883cc6149244d00f': 'Rollup-as-a-Service',
+        '0x759d4335cb712aa188935c2bd3aa6d205ac61305': 'Rollup-as-a-Service',
+        '0x5112eba9bc2468bb5134cbfbeab9334edae7106a': 'Oracle',
+        '0x9101eda106a443a0fa82375936d0d1680d5a64f5': 'Interoperability',
+        '0xa42ec46f2c9dc671a72218e145cc13dc119fb722': 'Relayer',
+        '0xcf128e88e11507abad12a7624a34e3d22f731abc': 'Rollup-as-a-Service',
+        '0xe3a148b25cca54eccbd3a4ab01e235d154f03efa': 'AI',
+        '0xe4661bdbc4f557d2684f8a7c4af50572e51d4166': 'AI',
+        '0xfca0128a19a5c06b0148c27ee7623417a11baabd': 'MEV Management'
+    }
+
+    df = df.with_columns(
+        (pl.col("network_address").replace_strict(category_type_dict, default=None)).alias("network_category")
+    )
 
     return df
 
