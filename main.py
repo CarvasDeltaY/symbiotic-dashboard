@@ -75,7 +75,7 @@ async def main():
 
     # Check data quality
     await data_quality_check(df_staking_data)
-    await data_quality_control(df_staking_data)
+    df_staking_data = await data_quality_control(df_staking_data)
 
     print("Adding data to database...")
 
