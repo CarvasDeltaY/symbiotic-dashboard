@@ -204,7 +204,9 @@ async def get_category_type_manual(
         '0xcf128e88e11507abad12a7624a34e3d22f731abc': 'Rollup-as-a-Service',
         '0xe3a148b25cca54eccbd3a4ab01e235d154f03efa': 'AI',
         '0xe4661bdbc4f557d2684f8a7c4af50572e51d4166': 'AI',
-        '0xfca0128a19a5c06b0148c27ee7623417a11baabd': 'MEV Management'
+        '0xfca0128a19a5c06b0148c27ee7623417a11baabd': 'MEV Management',
+        '0x8560c667ae72f28d09465b342a480dab28821f6b': 'Intent',
+        '0xad12e74847d6d1487a6a3a6b75d1f509f3f627e8': 'AI',
     }
 
     df = df.with_columns(
